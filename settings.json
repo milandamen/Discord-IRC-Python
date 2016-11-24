@@ -1,0 +1,11 @@
+{
+    "irc": {
+        "server": "chat.freenode.org",
+        "port": "6667",
+        "channel": "#aidoru-dirc",
+        "nickname": "DircBot"
+    },
+    "discord": {
+        "token": ""
+    }
+}
