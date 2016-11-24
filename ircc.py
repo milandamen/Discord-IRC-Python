@@ -1,53 +1,37 @@
 import sys
 
-import irc.client
+import irc.bot
+import irc.strings
 
-# Based on irccat2.py
+# Based on irccat2.py and testbot.py
 
-class IRC(irc.client.SimpleIRCClient):
+class IRC(irc.bot.SingleServerIRCBot):
     settings = None
     connection = None
     
     def __init__(self, settings):
-        irc.client.SimpleIRCClient.__init__(self)
+        irc.bot.SingleServerIRCBot.__init__(self, [(settings["irc"]["server"], int(settings["irc"]["port"]))], settings["irc"]["nickname"], settings["irc"]["nickname"])
         self.settings = settings["irc"]
+    
+    def on_nicknameinuse(self, connection, event):
+        connection.nick(connection.get_nickname() + "_")
     
     def on_welcome(self, connection, event):
         self.connection = connection
         channel = self.settings["channel"]
         
-        if irc.client.is_channel(channel):
-            connection.join(channel)
-        else:
-            self.main_loop()
+        connection.join(channel)
     
-    def on_join(self, connection, event):
-        self.main_loop()
+    def on_privmsg(self, connection, event):
+        print("Private from %s: %s" % (event.source.nick, event.arguments[0].strip()))
+        if event.source.nick == "david171971":
+            connection.privmsg(self.settings["channel"], event.arguments[0].strip())
     
-    def on_disconnect(self, conenction, event):
-        sys.exit(0)
-    
-    def main_loop(self):
-        connection = self.connection
-        settings = self.settings
-        
-        while 1:
-            line = sys.stdin.readline().strip()
-            if not line:
-                break
-            
-            connection.privmsg(settings["channel"], line)
-        connection.quit("Using DircBot, see ya!")
+    def on_pubmsg(self, connection, event):
+        print("Public from %s: %s" % (event.source.nick, event.arguments[0].strip()))
     
     def run(self):
-        server = self.settings["server"]
-        port = int(self.settings["port"])
-        nickname = self.settings["nickname"]
-        
         try:
-            self.connect(server, port, nickname)
-        except irc.client.ServerConnectionError as x:
-            print(x)
-            sys.exit(1)
-        
-        self.start()
+            self.start()
+        except KeyboardInterrupt:
+            self.connection.quit("Using DircBot, see ya!")
