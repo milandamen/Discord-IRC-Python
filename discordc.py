@@ -1,20 +1,44 @@
 import logging
 import discord
 import asyncio
+import aiohttp
+import async_timeout
 
 logging.basicConfig(level=logging.INFO)
 
+thread_lock = None
+
 settings = None
 client = discord.Client()
+server = None
+channel = None
+irc = None
 
 class Discord:
     def __init__(self, sett):
         global settings
+        global thread_lock
+        
         settings = sett["discord"]
         
         if not settings["token"]:
-            print("No token given. Get a token at https://discordapp.com/developers/applications/me")
+            with thread_lock:
+                print("[Discord] No token given. Get a token at https://discordapp.com/developers/applications/me")
             exit()
+    
+    def set_irc(self, ircc):
+        global irc
+        irc = ircc
+    
+    def set_thread_lock(self, lock):
+        global thread_lock
+        thread_lock = lock
+    
+    async def send_my_message(self, message):
+        global client
+        print("wewewewew")
+        await client.send_message(channel, message.strip())
+        print("dsdsdsdsdsd")
     
     def run(self):
         global settings
@@ -29,18 +53,85 @@ class Discord:
     
 @client.event
 async def on_message(message):
+    global server
+    global channel
+    global thread_lock
+    global irc
+    
     # Don't reply to itself
     if message.author == client.user:
         return
     
-    print(message)
+    if message.channel != channel:
+        return
+    
+    with thread_lock:
+        print("[Discord] %s: %s" % (message.author.name, message.content.strip()))
+    
+    irc.send_my_message("%s: %s" % (message.author.name, message.content))
 
 @client.event
 async def on_ready():
-    print("Logged in as:")
-    print(client.user.name)
-    print(client.user.id)
-    print("-------")
-    if len(client.servers) == 0:
-        print("Bot is not yet in any server.")
-        await client.close()
+    global server
+    global channel
+    global thread_lock
+    
+    with thread_lock:
+        print("[Discord] Logged in as:")
+        print("[Discord] " + client.user.name)
+        print("[Discord] " + client.user.id)
+        
+        if len(client.servers) == 0:
+            print("[Discord] Bot is not yet in any server.")
+            await client.close()
+            return
+        
+        if settings["server"] == "":
+            print("[Discord] You have not configured a server to use in settings.json")
+            print("[Discord] Please put one of the server IDs listed below in settings.json")
+            
+            for server in client.servers:
+                print("[Discord] %s: %s" % (server.name, server.id))
+            
+            await client.close()
+            return
+        
+        findServer = [x for x in client.servers if x.id == settings["server"]]
+        if not len(findServer):
+            print("[Discord] No server could be found with the specified id: " + settings["server"])
+            print("[Discord] Available servers:")
+            
+            for server in client.servers:
+                print("[Discord] %s: %s" % (server.name, server.id))
+                
+            await client.close()
+            return
+        
+        server = findServer[0]
+        
+        if settings["channel"] == "":
+            print("[Discord] You have not configured a channel to use in settings.json")
+            print("[Discord] Please put one of the channel IDs listed below in settings.json")
+            
+            for channel in server.channels:
+                if channel.type == discord.ChannelType.text:
+                    print("[Discord] %s: %s" % (channel.name, channel.id))
+            
+            await client.close()
+            return
+        
+        findChannel = [x for x in server.channels if x.id == settings["channel"] and x.type == discord.ChannelType.text]
+        if not len(findChannel):
+            print("[Discord] No channel could be found with the specified id: " + settings["server"])
+            print("[Discord] Note that you can only use text channels.")
+            print("[Discord] Available channels:")
+            
+            for channel in server.channels:
+                if channel.type == discord.ChannelType.text:
+                    print("[Discord] %s: %s" % (channel.name, channel.id))
+            
+            await client.close()
+            return
+        
+        channel = findChannel[0]
+    
