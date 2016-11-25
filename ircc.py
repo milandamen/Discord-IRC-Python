@@ -1,9 +1,6 @@
-import sys
-
 import irc.bot
-import irc.strings
 
-# Based on irccat2.py and testbot.py
+# Based on irccat2.py and testbot.py from https://github.com/jaraco/irc
 
 class IRC(irc.bot.SingleServerIRCBot):
     settings = None
@@ -34,4 +31,4 @@ class IRC(irc.bot.SingleServerIRCBot):
         try:
             self.start()
         except KeyboardInterrupt:
-            self.connection.quit("Using DircBot, see ya!")
+            self.connection.quit("Using DiscordIRCBot, see ya!")

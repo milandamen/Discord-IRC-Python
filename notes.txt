@@ -1,2 +1,6 @@
 needs libraries:
 irc
+discord.py
+
+Adding the bot to a server:
+https://discordapp.com/oauth2/authorize?client_id=251488585755262976&scope=bot&permissions=3072
