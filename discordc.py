@@ -77,7 +77,8 @@ def on_message(message):
     irc.send_my_message("%s: %s" % (message.author.name, message.content))
 
 @client.event
-async def on_ready():
+@asyncio.coroutine
+def on_ready():
     global server
     global channel
     global thread_lock
@@ -89,7 +90,7 @@ async def on_ready():
         
         if len(client.servers) == 0:
             print("[Discord] Bot is not yet in any server.")
-            await client.close()
+            yield from client.close()
             return
         
         if settings["server"] == "":
@@ -99,7 +100,7 @@ async def on_ready():
             for server in client.servers:
                 print("[Discord] %s: %s" % (server.name, server.id))
             
-            await client.close()
+            yield from client.close()
             return
         
         findServer = [x for x in client.servers if x.id == settings["server"]]
@@ -110,7 +111,7 @@ async def on_ready():
             for server in client.servers:
                 print("[Discord] %s: %s" % (server.name, server.id))
                 
-            await client.close()
+            yield from client.close()
             return
         
         server = findServer[0]
@@ -123,7 +124,7 @@ async def on_ready():
                 if channel.type == discord.ChannelType.text:
                     print("[Discord] %s: %s" % (channel.name, channel.id))
             
-            await client.close()
+            yield from client.close()
             return
         
         findChannel = [x for x in server.channels if x.id == settings["channel"] and x.type == discord.ChannelType.text]
@@ -136,7 +137,7 @@ async def on_ready():
                 if channel.type == discord.ChannelType.text:
                     print("[Discord] %s: %s" % (channel.name, channel.id))
             
-            await client.close()
+            yield from client.close()
             return
         
         channel = findChannel[0]
