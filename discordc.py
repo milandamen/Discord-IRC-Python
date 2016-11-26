@@ -51,6 +51,7 @@ def send_my_message_async(message):
     yield from client.send_message(channel, message.strip())
     
 @client.event
+@asyncio.coroutine
 async def on_message(message):
     global settings
     global client
