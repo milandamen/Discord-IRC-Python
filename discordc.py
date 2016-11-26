@@ -52,7 +52,7 @@ def send_my_message_async(message):
     
 @client.event
 @asyncio.coroutine
-async def on_message(message):
+def on_message(message):
     global settings
     global client
     global channel
@@ -65,7 +65,7 @@ async def on_message(message):
     
     if message.author.name == settings["botowner"]:
         if message.content.strip() == "!quit":
-            await client.close()
+            yield from client.close()
             return
     
     if message.channel != channel:
