@@ -11,8 +11,8 @@ Download the code from this repository, then copy `settings.example.json` to `se
 
 Add a new application and bot user to your Discord account, then invite your bot to a server you manage:
 
-https://discordapp.com/oauth2/authorize?client_id=\<client_id\>&scope=bot&permissions=3072  
-(change <client_id> to your application's client_id)
+https://discordapp.com/oauth2/authorize?client_id=CLIENT_ID&scope=bot&permissions=3072  
+(change CLIENT_ID to your application's client_id)
 
 ## Running
 Just launch the bot using `python3 main.py`.
