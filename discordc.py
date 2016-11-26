@@ -46,8 +46,9 @@ class Discord:
         global client
         asyncio.run_coroutine_threadsafe(client.close(), client.loop)
 
-async def send_my_message_async(message):
-    await client.send_message(channel, message.strip())
+@asyncio.coroutine
+def send_my_message_async(message):
+    yield from client.send_message(channel, message.strip())
     
 @client.event
 async def on_message(message):
