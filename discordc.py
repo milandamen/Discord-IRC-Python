@@ -1,6 +1,9 @@
 import logging
 import discord
 import asyncio
+from asyncio import coroutines
+import concurrent.futures
+from asyncio import futures
 
 logging.basicConfig(level=logging.INFO)
 
@@ -46,13 +49,11 @@ class Discord:
         global client
         asyncio.run_coroutine_threadsafe(client.close(), client.loop)
 
-@asyncio.coroutine
-def send_my_message_async(message):
-    yield from client.send_message(channel, message.strip())
+async def send_my_message_async(message):
+    await client.send_message(channel, message.strip())
     
 @client.event
-@asyncio.coroutine
-def on_message(message):
+async def on_message(message):
     global settings
     global client
     global channel
@@ -65,7 +66,7 @@ def on_message(message):
     
     if message.author.name == settings["botowner"]:
         if message.content.strip() == "!quit":
-            yield from client.close()
+            await client.close()
             return
     
     if message.channel != channel:
@@ -77,8 +78,7 @@ def on_message(message):
     irc.send_my_message("%s: %s" % (message.author.name, message.content))
 
 @client.event
-@asyncio.coroutine
-def on_ready():
+async def on_ready():
     global server
     global channel
     global thread_lock
@@ -90,7 +90,7 @@ def on_ready():
         
         if len(client.servers) == 0:
             print("[Discord] Bot is not yet in any server.")
-            yield from client.close()
+            await client.close()
             return
         
         if settings["server"] == "":
@@ -100,7 +100,7 @@ def on_ready():
             for server in client.servers:
                 print("[Discord] %s: %s" % (server.name, server.id))
             
-            yield from client.close()
+            await client.close()
             return
         
         findServer = [x for x in client.servers if x.id == settings["server"]]
@@ -111,7 +111,7 @@ def on_ready():
             for server in client.servers:
                 print("[Discord] %s: %s" % (server.name, server.id))
                 
-            yield from client.close()
+            await client.close()
             return
         
         server = findServer[0]
@@ -124,7 +124,7 @@ def on_ready():
                 if channel.type == discord.ChannelType.text:
                     print("[Discord] %s: %s" % (channel.name, channel.id))
             
-            yield from client.close()
+            await client.close()
             return
         
         findChannel = [x for x in server.channels if x.id == settings["channel"] and x.type == discord.ChannelType.text]
@@ -137,7 +137,7 @@ def on_ready():
                 if channel.type == discord.ChannelType.text:
                     print("[Discord] %s: %s" % (channel.name, channel.id))
             
-            yield from client.close()
+            await client.close()
             return
         
         channel = findChannel[0]
