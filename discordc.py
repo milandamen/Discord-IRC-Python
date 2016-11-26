@@ -1,8 +1,6 @@
 import logging
 import discord
 import asyncio
-import aiohttp
-import async_timeout
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,11 +32,9 @@ class Discord:
         global thread_lock
         thread_lock = lock
     
-    async def send_my_message(self, message):
+    def send_my_message(self, message):
         global client
-        print("wewewewew")
-        await client.send_message(channel, message.strip())
-        print("dsdsdsdsdsd")
+        asyncio.run_coroutine_threadsafe(send_my_message_async(message), client.loop)
     
     def run(self):
         global settings
@@ -48,12 +44,15 @@ class Discord:
     
     def close(self):
         global client
-        
-        client.close()
+        asyncio.run_coroutine_threadsafe(client.close(), client.loop)
+
+async def send_my_message_async(message):
+    await client.send_message(channel, message.strip())
     
 @client.event
 async def on_message(message):
-    global server
+    global settings
+    global client
     global channel
     global thread_lock
     global irc
@@ -61,6 +60,11 @@ async def on_message(message):
     # Don't reply to itself
     if message.author == client.user:
         return
+    
+    if message.author.name == settings["botowner"]:
+        if message.content.strip() == "!quit":
+            await client.close()
+            return
     
     if message.channel != channel:
         return

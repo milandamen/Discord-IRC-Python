@@ -3,9 +3,13 @@
         "server": "",
         "port": "6667",
         "channel": "",
-        "nickname": "DiscordIRCBot"
+        "nickname": "DiscordIRCBot",
+        "botowner": ""
     },
     "discord": {
-        "token": ""
+        "token": "",
+        "botowner": "",
+        "server": "",
+        "channel": ""
     }
 }

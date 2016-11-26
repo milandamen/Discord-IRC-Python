@@ -1,6 +1,3 @@
-import aiohttp
-import asyncio
-import async_timeout
 import irc.bot
 
 # Based on irccat2.py and testbot.py from https://github.com/jaraco/irc
@@ -8,7 +5,6 @@ import irc.bot
 
 class IRC(irc.bot.SingleServerIRCBot):
     thread_lock = None
-    event_loop = None
     
     settings = None
     connection = None
@@ -46,21 +42,19 @@ class IRC(irc.bot.SingleServerIRCBot):
         with self.thread_lock:
             print("[IRC] Connected to channel")
     
-    #def on_privmsg(self, connection, event):
-        #print("Private from %s: %s" % (event.source.nick, event.arguments[0].strip()))
-        #if event.source.nick == "david171971":
-            #connection.privmsg(self.settings["channel"], event.arguments[0].strip())
-    
     def on_pubmsg(self, connection, event):
         message = event.arguments[0].strip()
+        message = "%s: %s" % (event.source.nick, message)
         with self.thread_lock:
-            print("[IRC] %s: %s" % (event.source.nick, message))
+            print("[IRC] " + message)
         
-        event_loop = asyncio.get_event_loop()
-        event_loop.run_until_complete(self.discord.send_my_message("%s: %s" % (event.source.nick, message)))
+        if event.source.nick == self.settings["botowner"]:
+            if event.arguments[0].strip() == "!quit":
+                self.discord.close()
+                return
+        
+        self.discord.send_my_message(message)
     
     def run(self):
-        #self.event_loop = asyncio.new_event_loop()
-        #asyncio.set_event_loop(self.event_loop)
         self.start()
         
