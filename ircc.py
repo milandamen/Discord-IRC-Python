@@ -5,6 +5,7 @@ import irc.bot
 
 class IRC(irc.bot.SingleServerIRCBot):
     thread_lock = None
+    running = True
     
     settings = None
     connection = None
@@ -24,7 +25,11 @@ class IRC(irc.bot.SingleServerIRCBot):
         self.connection.privmsg(self.settings["channel"], message.strip())
         
     def close(self):
+        self.running = False
         self.connection.quit("Using DiscordIRCBot")
+    
+    def set_running(self, value):
+        self.running = False
     
     def on_nicknameinuse(self, connection, event):
         connection.nick(connection.get_nickname() + "_")
@@ -58,3 +63,10 @@ class IRC(irc.bot.SingleServerIRCBot):
     def run(self):
         self.start()
         
+        if self.running:
+            self.running = False
+            ircc = IRC({"irc": self.settings})
+            ircc.set_discord(self.discord)
+            self.discord.set_irc(ircc)
+            ircc.set_thread_lock(self.thread_lock)
+            ircc.run()

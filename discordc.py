@@ -47,6 +47,8 @@ class Discord:
     
     def close(self):
         global client
+        global irc
+        irc.set_running(False)
         asyncio.run_coroutine_threadsafe(client.close(), client.loop)
 
 async def send_my_message_async(message):
@@ -64,13 +66,13 @@ async def on_message(message):
     if message.author == client.user:
         return
     
+    if message.channel != channel:
+        return
+    
     if message.author.name == settings["botowner"]:
         if message.content.strip() == "!quit":
             await client.close()
             return
-    
-    if message.channel != channel:
-        return
     
     with thread_lock:
         print("[Discord] %s: %s" % (message.author.name, message.content.strip()))
