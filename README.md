@@ -28,4 +28,4 @@ If you use this bot, you must let the users in the Discord and IRC channels know
 
 ### Developing
 You may change the code from this repository, but you have to credit this repository.  
-If you want to help developing this bot, make a fork, make changes in your own repo, then make a Pull Request here.
+I don't really maintain this repository any more because I don't use the bot any more. You can fork and make your own improvements, or check out the forks of other people.
