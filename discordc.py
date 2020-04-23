@@ -88,9 +88,9 @@ async def on_ready():
     with thread_lock:
         print("[Discord] Logged in as:")
         print("[Discord] " + client.user.name)
-        print("[Discord] " + client.user.id)
+        print("[Discord] " + str(client.user.id))
         
-        if len(client.servers) == 0:
+        if len(client.guilds) == 0:
             print("[Discord] Bot is not yet in any server.")
             await client.close()
             return
@@ -99,18 +99,18 @@ async def on_ready():
             print("[Discord] You have not configured a server to use in settings.json")
             print("[Discord] Please put one of the server IDs listed below in settings.json")
             
-            for server in client.servers:
+            for server in client.guilds:
                 print("[Discord] %s: %s" % (server.name, server.id))
             
             await client.close()
             return
         
-        findServer = [x for x in client.servers if x.id == settings["server"]]
+        findServer = [x for x in client.guilds if str(x.id) == settings["server"]]
         if not len(findServer):
             print("[Discord] No server could be found with the specified id: " + settings["server"])
             print("[Discord] Available servers:")
             
-            for server in client.servers:
+            for server in client.guilds:
                 print("[Discord] %s: %s" % (server.name, server.id))
                 
             await client.close()
@@ -129,7 +129,7 @@ async def on_ready():
             await client.close()
             return
         
-        findChannel = [x for x in server.channels if x.id == settings["channel"] and x.type == discord.ChannelType.text]
+        findChannel = [x for x in server.channels if str(x.id) == settings["channel"] and x.type == discord.ChannelType.text]
         if not len(findChannel):
             print("[Discord] No channel could be found with the specified id: " + settings["server"])
             print("[Discord] Note that you can only use text channels.")
