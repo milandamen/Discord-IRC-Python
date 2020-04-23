@@ -26,7 +26,7 @@ class IRC(irc.bot.SingleServerIRCBot):
         
     def close(self):
         self.running = False
-        self.connection.quit("Using DiscordIRCBot")
+        self.connection.quit(self.settings.get("quitmsg", "Using DiscordIRCBot"))
     
     def set_running(self, value):
         self.running = False
