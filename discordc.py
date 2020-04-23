@@ -52,7 +52,7 @@ class Discord:
         asyncio.run_coroutine_threadsafe(client.close(), client.loop)
 
 async def send_my_message_async(message):
-    await client.send_message(channel, message.strip())
+    await channel.send(message.strip())
     
 @client.event
 async def on_message(message):
@@ -143,4 +143,3 @@ async def on_ready():
             return
         
         channel = findChannel[0]
-    
