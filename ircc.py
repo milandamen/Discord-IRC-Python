@@ -12,7 +12,13 @@ class IRC(irc.bot.SingleServerIRCBot):
     discord = None
     
     def __init__(self, settings):
-        irc.bot.SingleServerIRCBot.__init__(self, [(settings["irc"]["server"], int(settings["irc"]["port"]))], settings["irc"]["nickname"], settings["irc"]["nickname"])
+        irc.client.ServerConnection.buffer_class.encoding = "latin-1"
+        irc.bot.SingleServerIRCBot.__init__(self, [\
+            (settings["irc"]["server"],\
+            int(settings["irc"]["port"]))],\
+            settings["irc"]["nickname"],\
+            settings["irc"]["nickname"])
+
         self.settings = settings["irc"]
     
     def set_discord(self, discordc):
