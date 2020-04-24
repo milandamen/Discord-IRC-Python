@@ -4,7 +4,8 @@
         "port": "6667",
         "channel": "",
         "nickname": "DiscordIRCBot",
-        "botowner": ""
+        "botowner": "",
+        "quitmsg": "Cya!"
     },
     "discord": {
         "token": "",
