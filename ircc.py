@@ -1,4 +1,5 @@
 import irc.bot
+import re
 
 # Based on irccat2.py and testbot.py from https://github.com/jaraco/irc
 
@@ -55,7 +56,9 @@ class IRC(irc.bot.SingleServerIRCBot):
     
     def on_pubmsg(self, connection, event):
         message = event.arguments[0].strip()
-        message = "%s: %s" % (event.source.nick, message)
+        message = "{:s} {:s}".format(\
+            re.sub(r"(]|-|\\|[`*_{}[()#+.!])", r'\\\1', event.source.nick), message)
+
         with self.thread_lock:
             print("[IRC] " + message)
         
