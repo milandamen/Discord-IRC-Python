@@ -68,16 +68,20 @@ async def on_message(message):
     
     if message.channel != channel:
         return
-    
+
     if message.author.name == settings["botowner"]:
         if message.content.strip() == "!quit":
             await client.close()
             return
-    
+
     with thread_lock:
         print("[Discord] %s: %s" % (message.author.name, message.content.strip()))
-    
-    irc.send_my_message("%s: %s" % (message.author.name, message.content))
+
+    content = message.content
+    if len(message.attachments) > 0:
+        content += ' ' + message.attachments[0].url
+
+    irc.send_my_message("%s: %s" % (message.author.name, content))
 
 @client.event
 async def on_ready():
