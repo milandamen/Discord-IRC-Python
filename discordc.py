@@ -77,7 +77,7 @@ async def on_message(message):
     with thread_lock:
         print("[Discord] %s: %s" % (message.author.name, message.content.strip()))
 
-    content = message.content
+    content = message.clean_content
     if len(message.attachments) > 0:
         content += ' ' + message.attachments[0].url
 
